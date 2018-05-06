@@ -1,3 +1,15 @@
-<h1>
-    tarun bhavana
-</h1>
+{{#if pushcat }}
+    {{#each pushcat }}
+        
+            <a href="http://localhost:8000/posts/show/{{this.id}}"><h1>{{this.title}}</h1></a><br>
+            Time updated:{{this.time}}<br>
+            <h3>Author:{{this.author}}</h3>  
+            <p>Category : {{this.category}}</p>
+            Problem : {{this.problem}}<br>
+            <a href="http://localhost:8000/posts/show/{{this.id}}">Read more</a>
+            
+            
+            <br>
+        
+    {{/each}}
+{{/if}}

@@ -1,28 +1,62 @@
 var express = require('express');
 var multer=require('multer');
 var path=require('path');
-var db=require('monk')('localhost:27017/blog');
+var mongo=require('mongodb');
+var mongoose = require('mongoose');
+
 
 var app = express.Router();
 var id=require('./user');
-/*
-var storage=multer.diskStorage({
-    destination:'./public/uploads/',
-    filename:function(req,file,cd){
-        cd(null,file.fieldname+'-'+Date.now()+path.extname(file.originalname));
-    }
-});
-
-var upload = multer({
-    storage:storage
-}).single('upload');
-*/
-
-var data=db.get('post');
 // Get Homepage
+var Schema1=mongoose.Schema;
+var construct1=new Schema1(
+	{
+		title:{
+			type:String
+		},
+		category:{
+			type:String 
+		},
+		author:{
+			type:String
+		},
+		problem:
+		{
+			type:String
+		},
+		body:{
+			type:String
+		},
+		time:{
+			type:String
+		}
+	},{collection:'app4'}
+);
+
+var data2=mongoose.model('data2',construct1);
+module.exports=getdata=function(cb)
+{
+	data2.find(cb);
+}
+
+module.exports=putdata=function(see)
+{
+	var insert= new data2(see);
+	insert.save();
+}
+module.exports=getcategory= function(category, callback){
+	var query = {category: category};
+	data2.find(query, callback);
+}
+
+module.exports=getid= function(id, callback){
+	var query = {_id: id};
+	data2.findOne(query, callback);
+}
+
 app.get('/', ensureAuthenticated, function(req, res)
 {
-   
+
 	console.log(req.session.passport.user);
 	var userid=req.session.passport.user;		
 	getUserById(userid,function(err,doc)
@@ -37,7 +71,11 @@ app.get('/', ensureAuthenticated, function(req, res)
 			console.log(doc);
 			var name=doc.name;
 			var email=doc.email;
-			res.render('index',{title1:name,title2:email});	
+			getdata(function(err,docs)
+			{
+				res.render('index',{title1:name,title2:email,title:docs});
+			});
+				
   			
 			  
 		}
@@ -46,10 +84,10 @@ app.get('/', ensureAuthenticated, function(req, res)
 	
 	
 	
-console.log(req.cookies);
-console.log("===============>>");
+//console.log(req.cookies);
+//console.log("===============>>");
 
-console.log("================");
+//console.log("================");
 
 });
 
@@ -60,6 +98,8 @@ function ensureAuthenticated(req, res, next){
 		//req.flash('error_msg','You are not logged in');
 		res.redirect('/users/login');
 	}
+
+
 }
 app.get('/userlist',function(req,res)
 {
@@ -78,23 +118,13 @@ app.get('/userlist',function(req,res)
 				
 				userlist[i]={name:doc[i].username,email:doc[i].email};
 			}
-			console.log(userlist);
-			console.log(email);
+			//console.log(userlist);
+			//console.log(email);
 			res.render('userlist',{title:userlist});
 		}
 	});
 
 	
-});
-app.get('/posts',function(req,res)
-{
-	res.render('posts');
-
-});
-
-app.get('/cat',function(req,res)
-{
-	res.render('cat');
 });
 
 module.exports = app;

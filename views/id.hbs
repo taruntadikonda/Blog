@@ -1,0 +1,31 @@
+<h1> {{title.title}}</h1>Time updated:{{title.time}}<br>
+<h3>Author:{{title.author}}</h3>  
+
+<div class="headline"><h4>Category :</h4><p> {{title.category}}</p></div>
+<div class="headline"><h4>Problem :</h4><p> {{title.problem}}</p></div>
+<h2>Body</h2>
+<div class="bodyback">{{{title.body}}}</div><br>
+{{#if comdata}}
+      {{#each comdata}}
+      <div >
+        <p>comment by : {{this.name}}</p>
+        <p class="bodyback">{{this.comment}}</p><br>
+      </div>
+      {{/each}}
+{{/if}}
+
+<form method="post" action="/posts/show/comments">
+   <div class="form-group">
+    <label>Comment</label>
+    <textarea placeholder="comments" name="comment" id="comment"></textarea>
+  </div>
+  <div class="form-group">
+    
+    <input type="hidden" class="form-control" placeholder="Name" name="id" value="{{title.id}}">
+  </div>
+  <div class="form-group">
+    
+    <input type="hidden" class="form-control" placeholder="Name" name="name" value="{{name}}">
+  </div>
+  <button type="submit" class="btn btn-default">Comment</button>
+</form>       

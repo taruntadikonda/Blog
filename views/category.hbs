@@ -1,0 +1,8 @@
+<h1>
+    Categories
+</h1>
+{{#if title}}
+    {{#each title}}
+        <div class="alert alert-danger"><a href="http://localhost:8000/category/show/{{this}}">{{this}}</a><br></div>
+    {{/each}}
+{{/if}}

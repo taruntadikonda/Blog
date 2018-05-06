@@ -24,13 +24,11 @@ var construct=new Schema({
 	},
 	name: {
 		type: String
-	},
-	img: { 
-		data: Buffer,
-		contentType: String 
 	}
 	
+	
 },{collection:'app3'});
+//new schema
 var data=mongoose.model('data',construct);
 
 data.find(function(err,doc)
@@ -73,6 +71,12 @@ getallusers=function(cb)
 	data.find(cb);
 }
 
+module.exports=getauthor=function(id,cb)
+{
+	var query={_id:id};
+	data.findOne(query,cb);
+}
+
 getUserByUsername = function(username, callback){
 	var query = {username: username};
 	data.findOne(query, callback);
@@ -102,7 +106,7 @@ app.get('/login', function(req, res){
 app.post('/register', function(req, res){
 	var a=0;
 	//var usererror=[];
-	console.log(userdata);
+	//console.log(userdata);
 	var name = req.body.name;
 	var email = req.body.email;
 	var username = req.body.username;
@@ -164,10 +168,10 @@ app.post('/register', function(req, res){
 				   
 				  var insert= new data(item);
 
-				  console.log('3');
-				  console.log(item);
+				  //console.log('3');
+				  //console.log(item);
 
-					userdata.push(item.username);
+				  userdata.push(item.username);
 				  insert.save();
 				  
 					checkuser(function(err,doc)
@@ -180,7 +184,7 @@ app.post('/register', function(req, res){
 						{
 							userdata[i]=doc[i].username;
 						}
-						console.log(userdata);
+						//console.log(userdata);
 					}
 					});
     		}

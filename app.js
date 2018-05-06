@@ -16,10 +16,14 @@ var db = mongoose.connection;
 
 var routes = require('./routes/index');
 var users = require('./routes/user');
-
+var post = require('./routes/posts');
+var category = require('./routes/category');
 // Init App
 var app = express();
 
+//moment
+
+app.locals.moment=require('moment');
 // View Engine
 app.set('views', path.join(__dirname, 'views'));
 app.engine('hbs', hbs({extname:'hbs',defaultLayout:'error',layoutsDir:__dirname+'/views'}));
@@ -83,9 +87,10 @@ app.use(function(req,res,next)
 
 app.use('/', routes);
 app.use('/users', users);
-
+app.use('/posts',post);
+app.use('/category',category);
 // Set Port
-app.set('port', (process.env.PORT || 8001));
+app.set('port', (process.env.PORT || 8000));
 
 app.listen(app.get('port'), function(){
 	console.log('Server started on port '+app.get('port'));
