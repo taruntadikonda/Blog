@@ -1,10 +1,11 @@
 var express = require('express');
 var multer=require('multer');
 var path=require('path');
+var db=require('monk')('localhost:27017/blog');
 
 var app = express.Router();
 var id=require('./user');
-
+/*
 var storage=multer.diskStorage({
     destination:'./public/uploads/',
     filename:function(req,file,cd){
@@ -15,11 +16,13 @@ var storage=multer.diskStorage({
 var upload = multer({
     storage:storage
 }).single('upload');
+*/
 
-var data={};
+var data=db.get('post');
 // Get Homepage
-app.get('/', ensureAuthenticated, function(req, res){
-	
+app.get('/', ensureAuthenticated, function(req, res)
+{
+   
 	console.log(req.session.passport.user);
 	var userid=req.session.passport.user;		
 	getUserById(userid,function(err,doc)
@@ -30,19 +33,24 @@ app.get('/', ensureAuthenticated, function(req, res){
 		}
 		else
 		{
+			var title3=false;
 			console.log(doc);
 			var name=doc.name;
 			var email=doc.email;
-			res.render('index',{title1:name,title2:email});  
+			res.render('index',{title1:name,title2:email});	
+  			
+			  
 		}
+		
 	});
-	console.log(data);
+	
 	
 	
 console.log(req.cookies);
 console.log("===============>>");
 
 console.log("================");
+
 });
 
 function ensureAuthenticated(req, res, next){
@@ -56,6 +64,7 @@ function ensureAuthenticated(req, res, next){
 app.get('/userlist',function(req,res)
 {
 	var userlist=[];
+	var email=[];
 	getallusers(function(err,doc)
 	{
 		if(err)
@@ -66,31 +75,26 @@ app.get('/userlist',function(req,res)
 		{
 			for(i=0;i<doc.length;i++)
 			{
-				userlist[i]=doc[i].username;
+				
+				userlist[i]={name:doc[i].username,email:doc[i].email};
 			}
 			console.log(userlist);
+			console.log(email);
 			res.render('userlist',{title:userlist});
 		}
 	});
 
 	
 });
-app.post('/upload',function(req,res)
+app.get('/posts',function(req,res)
 {
-	upload(req,res,function(err)
-	{
-    if(err)
-    {
-        console.log(err);
-    }
-    else{
-		console.log(req.file);
-		img=req.file;
-		imageupload(img);
-        res.redirect('/');
-    }
+	res.render('posts');
+
 });
 
+app.get('/cat',function(req,res)
+{
+	res.render('cat');
 });
 
 module.exports = app;
