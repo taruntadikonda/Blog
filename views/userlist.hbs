@@ -2,6 +2,6 @@
 <h2 class="page-header">userlist</h2>
 {{#if title}}
       {{#each title}}
-        <div class="alert alert-danger">Name:{{this.name}}<br>Email:{{this.email}}</div>
+        <div class="alert alert-danger"><a href="http://localhost:8000/userlist/{{this.name}}">Name:{{this.name}}</a><br>Email:{{this.email}}</div>
       {{/each}}
 {{/if}}

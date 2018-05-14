@@ -1,0 +1,14 @@
+<h3>
+    Posts By {{name}}
+</h3>
+{{#if title}}
+{{#each title}}
+
+<a href="http://localhost:8000/posts/show/{{this.id}}"><h1> {{this.title}}</h1></a>Time updated:{{this.time}}<br>
+<h3>Author:{{this.author}}</h3>  
+
+<div class="headline"><h4>Category :</h4><p> {{this.category}}</p></div>
+<div class="headline"><h4>Problem :</h4><p> {{this.problem}}</p></div>
+<a href="http://localhost:8000/posts/show/{{this.id}}">Read More</a>
+{{/each}}
+{{/if}}

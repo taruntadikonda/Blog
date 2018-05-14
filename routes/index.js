@@ -123,7 +123,7 @@ app.get('/userlist',function(req,res)
 			for(i=0;i<doc.length;i++)
 			{
 				
-				userlist[i]={name:doc[i].username,email:doc[i].email};
+				userlist[i]={name:doc[i].username,email:doc[i].email,id:doc[i].id};
 			}
 			//console.log(userlist);
 			//console.log(email);
@@ -133,5 +133,20 @@ app.get('/userlist',function(req,res)
 
 	
 });
+
+app.get('/userlist/:name',function(req,res)
+{
+	var name=req.params.name;
+	getposts(name,function(err,doc)
+	{
+		if(err)
+		console.log(err);
+		else{
+			res.render('name',{name:name,title:doc});
+		}
+	});
+
+	
+})
 
 module.exports = app;
