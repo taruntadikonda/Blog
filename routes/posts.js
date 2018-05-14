@@ -35,7 +35,7 @@ putcomment=function(see)
 	insert.save();
 }
 
-getcomment=function(comdata,cb)
+module.exports=getcomment=function(comdata,cb)
 {
     var query = {id: comdata};
 	data3.find(query, cb);

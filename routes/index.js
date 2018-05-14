@@ -1,6 +1,6 @@
 var express = require('express');
 var multer=require('multer');
-var path=require('path');
+var path=require('path');	
 var mongo=require('mongodb');
 var mongoose = require('mongoose');
 
@@ -38,6 +38,13 @@ module.exports=getdata=function(cb)
 {
 	data2.find(cb);
 }
+
+module.exports=getposts=function(post,cb)
+{
+	var query={author:post};
+	data2.find(query,cb);
+}
+
 
 module.exports=putdata=function(see)
 {

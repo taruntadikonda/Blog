@@ -18,6 +18,7 @@ var routes = require('./routes/index');
 var users = require('./routes/user');
 var post = require('./routes/posts');
 var category = require('./routes/category');
+var question = require('./routes/question');
 // Init App
 var app = express();
 
@@ -89,6 +90,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/posts',post);
 app.use('/category',category);
+app.use('/question',question);
 // Set Port
 app.set('port', (process.env.PORT || 8000));
 
