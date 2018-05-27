@@ -1,0 +1,27 @@
+<h5>
+    Enter the Verification code sent which is sent to the email mentioned
+</h5>
+<form method="post" action="/users/register">
+   <div class="form-group">
+    <label>Verification code</label>
+    <input type="text" class="form-control" placeholder="verificationcode" name="verificationcode">
+  </div>
+  <div class="form-group">
+    
+    <input type="hidden" class="form-control" placeholder="Name" name="name" value="{{name}}">
+  </div>
+  <div class="form-group">
+    
+    <input type="hidden" class="form-control" placeholder="Name" name="username" value="{{username}}">
+  </div>
+  <div class="form-group">
+    
+    <input type="hidden" class="form-control" placeholder="Name" name="email" value="{{email}}">
+  </div>
+  <div class="form-group">
+    
+    <input type="hidden" class="form-control" placeholder="Name" name="password" value="{{password}}">
+  </div>
+  <button type="submit" class="btn btn-default">Submit</button>
+</form>
+

@@ -5,8 +5,11 @@ var LocalStrategy = require('passport-local').Strategy;
 var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
 var mongodb=require('mongodb');
+var nodemailer=require('nodemailer');
 var app=express();
 
+
+var verificationcode;
 var userdata=[];
 var usererror=[];
 // User Schema
@@ -97,22 +100,17 @@ app.get('/register', function(req, res){
 	res.render('register');
 });
 
-// Login
-app.get('/login', function(req, res){
-	res.render('login');
-});
-
-// Register User
-app.post('/register', function(req, res){
+app.post('/verify',function(req,res){
 	var a=0;
-	//var usererror=[];
-	//console.log(userdata);
 	var name = req.body.name;
 	var email = req.body.email;
 	var username = req.body.username;
 	var password = req.body.password;
 	var password2 = req.body.password2;
-	
+	console.log(name+email+username+password+password2);
+
+	verificationcode=Math.floor(100000 + Math.random() * 900000);
+	console.log(verificationcode);
 	for(i=0;i<userdata.length;i++)
 	{
 		if(userdata[i]==username)
@@ -139,22 +137,87 @@ app.post('/register', function(req, res){
 	
 		
 	if(errors || (a==1))
-	{
-		res.render('register',{
-			errors:errors,usererror:usererror
+		{
+			res.render('register',{
+								errors:errors,usererror:usererror
+			});
+		}
+		else
+		{
+		//mail the verification code and get conformed
+		var sender=nodemailer.createTransport({
+			service:'Gmail',
+			auth:{
+				user:'taruntadikonda@gmail.com',
+				pass:'bujjibangaram'
+			}
 		});
-	} 
-	else 
-	{
+		var maildetails={
+			from:'tarun tadikonda <taruntadikonda@gmail.com>',
+			to:email,
+			subject:'submission',
+			text:'The verification code is : '+ verificationcode
+		};
+		sender.sendMail(maildetails,function(error,info)
+			{
+				if(error)
+				{
+					console.log("error is"+error);
+					
+
+				}
+				else
+				{
+					console.log("done submissin"+info);
+					checkuser(function(err,doc)
+						{			
+						if(err)
+							throw err;
+						else
+						{
+							for(i=0;i<doc.length;i++)
+							{
+								userdata[i]=doc[i].username;
+							}
+							//console.log(userdata);
+						}
+						});
+					
+				}
+			})
+
 		
-		
+
+
+
+			res.render('verify',{'name':name,'username':username,'email':email,'password':password,'password2':password2});
+	}
+	
+})
+
+// Login
+app.get('/login', function(req, res){
+	res.render('login');
+});
+
+// Register User
+app.post('/register', function(req, res){
+	
+	var name = req.body.name;
+	var email = req.body.email;
+	var username = req.body.username;
+	var password = req.body.password;
+	var verify = req.body.verificationcode;
+	//console.log(name+email+username+password);
+	if(verify==verificationcode){
+		console.log('verification done');
 		var item ={
 			name: name,
 			email:email,
 			username: username,
 			password: password
 		};
-		
+		console.log(item);
 		bcrypt.hash(item.password,10,function(err,hash)
   		{
     		if(err)
@@ -173,30 +236,24 @@ app.post('/register', function(req, res){
 
 				  userdata.push(item.username);
 				  insert.save();
-				  
-					checkuser(function(err,doc)
-					{			
-					if(err)
-						throw err;
-					else
-					{
-						for(i=0;i<doc.length;i++)
-						{
-							userdata[i]=doc[i].username;
-						}
-						//console.log(userdata);
-					}
-					});
+				  req.flash('success_msg', 'You are registered and can now login');
+				  res.redirect('/users/register');
+					
     		}
  		});
-		 
-		 
-
-		req.flash('success_msg', 'You are registered and can now login');
-
-		res.redirect('/users/login');
+		
 	}
+	 else{
+		 //eror throwback
+		 console.log('error in verifiaction');
+		 req.flash('success_msg', 'error in verification');
+				  res.redirect('/users/register');
+	 }
+	
 });
+app.get('/verify',function(req,res){
+	res.render('verify');
+})
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
