@@ -10,6 +10,7 @@ var app=express();
 
 
 var verificationcode;
+var passwordemail;
 var userdata=[];
 var usererror=[];
 // User Schema
@@ -85,6 +86,12 @@ getUserByUsername = function(username, callback){
 	data.findOne(query, callback);
 }
 
+updatepassword=function(oldpassword,newpassword,cb){
+	var query1={password:oldpassword};
+	var query2={$set:{password:newpassword}};
+	data.updateOne(query1,query2,cb);
+}
+
 module.exports=getUserById = function(id, callback){    
 	data.findById(id, callback);
 }
@@ -138,9 +145,9 @@ app.post('/verify',function(req,res){
 		
 	if(errors || (a==1))
 		{
-			res.render('register',{
-								errors:errors,usererror:usererror
-			});
+			res.render('register',{errors:errors,usererror:usererror});
+			
+								
 		}
 		else
 		{
@@ -251,9 +258,101 @@ app.post('/register', function(req, res){
 	 }
 	
 });
-app.get('/verify',function(req,res){
-	res.render('verify');
+app.get('/forgetpassword',function(req,res){
+	res.render('forgetpassword');
+});
+
+app.post('/passwordemailverify',function(req,res){
+	var email=req.body.email;
+	passwordemail=Math.floor(100000 + Math.random() * 900000);
+	var sender=nodemailer.createTransport({
+		service:'Gmail',
+		auth:{
+			user:'taruntadikonda@gmail.com',
+			pass:'bujjibangaram'
+		}
+	});
+	var maildetails={
+		from:'tarun tadikonda <taruntadikonda@gmail.com>',
+		to:email,
+		subject:'forget password',
+		text:'The verification code is : '+ passwordemail
+	};
+
+	sender.sendMail(maildetails,function(error,info){
+		if(error){
+			console.log(error);
+		}else{
+			console.log('mail sent');	
+		}
+	});
+	res.render('emailcheck',{'email':email});
+});
+
+app.post('/passwordchange',function(req,res)
+{
+	var enteredverificationcode=req.body.code;
+	var password=req.body.password;
+	var conformpassword=req.body.conformpassword;
+	var username=req.body.username;
+	req.checkBody('password', 'Password is required').notEmpty();
+	req.checkBody('conformpassword', 'Passwords do not match').equals(req.body.password);
+
+    
+	errors = req.validationErrors();
+	if(enteredverificationcode==passwordemail && !errors)
+	{
+		
+	
+		console.log('done verification');
+		getUserByUsername(username,function(err,userdata){
+		if(!err && userdata)
+		{
+			console.log(userdata);
+			bcrypt.hash(password,10,function(err,hash){
+				if(!err){
+					password=hash;
+					console.log(password);
+					updatepassword(userdata.password,password,function(err,response){
+						if(!err){
+							console.log(response);
+							req.flash('success_msg', 'password changed sussecufully');
+							res.redirect('/users/login');
+						}else{
+							console.log(err);
+							req.flash('success_msg', 'error in verification');
+						res.redirect('/users/login');
+						}
+					})
+					
+				}else{
+					req.flash('success_msg', 'error in verification');
+					res.redirect('/users/login');	
+				}
+			})
+
+			
+		}
+		else
+		{
+			//log the error
+			req.flash('success_msg', 'error in verification');
+			res.redirect('/users/login');
+		}	
+		
+		});
+	
+
+
+	}
+	else
+	{
+		req.flash('success_msg', 'error in verification');
+		res.redirect('/users/login');
+	}
+	
 })
+
 
 passport.use(new LocalStrategy(
   function(username, password, done) {
