@@ -15,6 +15,7 @@ app.get('/',function(req,res)
         console.log(err)
         else
         {
+		console.log(doc);
             var name=doc.name;
             getposts(name,function(err,docs)
             {
@@ -22,7 +23,7 @@ app.get('/',function(req,res)
                 console.log(err);
                 else
                 {
-
+	
                     console.log(docs.id);
                     res.render('question',{title:docs});
                     
